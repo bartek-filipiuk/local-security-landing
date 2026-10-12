@@ -1,0 +1,99 @@
+/* Design tokens. Same family as security-audit.dev (cool paper, Archivo, mono for commands),
+   one different decision: a deep green accent, because this page is about fixing things,
+   not about finding them. Severity colours are reserved for report data. Light only. */
+:root {
+  color-scheme: light;
+  --paper: #f4f6f5;
+  --surface: #ffffff;
+  --ink: #0e1714;
+  --ink-2: #44514c;
+  --ink-3: #59665f; /* 4.6:1 on --accent-tint, the darkest background it sits on */
+  --rule: #d9e0dc;
+  --accent: #0c6b4b;
+  --accent-strong: #08513a;
+  --accent-tint: #e4f1ea;
+  --term: #0e1714;
+  --term-ink: #e3ebe7;
+  --term-accent: #6fdcae;
+
+  --crit: #b3261e;
+  --high: #d4500f;
+  --med: #b27a16;
+  --low: #50668d;
+
+  --font: "Archivo Variable", "Helvetica Neue", Arial, sans-serif;
+  --mono: "JetBrains Mono Variable", ui-monospace, Menlo, Consolas, monospace;
+
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.25rem;
+  --step-2: 1.625rem;
+  --step-3: clamp(1.9rem, 3.4vw, 2.6rem);
+  --step-4: clamp(2.4rem, 6vw, 4.4rem);
+
+  --gutter: clamp(16px, 4vw, 40px);
+  --radius: 14px;
+  --header-h: 64px;
+  --col-gap: clamp(28px, 5vw, 72px);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 16px); }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 var(--step-0) / 1.6 var(--font);
+  font-stretch: 100%;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+::selection { background: var(--accent); color: #fff; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+img, svg { max-width: 100%; }
+a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+p { margin: 0; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+code, .mono { font-family: var(--mono); font-size: 0.9em; font-variant-ligatures: none; }
+code { background: var(--accent-tint); color: var(--accent-strong); padding: 0.1em 0.4em; border-radius: 5px; overflow-wrap: anywhere; }
+
+.wrap { width: min(1120px, 100% - 2 * var(--gutter)); margin-inline: auto; }
+.section { padding-block: clamp(64px, 9vw, 112px); }
+.band { background: var(--surface); border-block: 1px solid var(--rule); }
+.tint { background: var(--accent-tint); }
+/* One rail for every two-column section: the right column starts at the same x everywhere. */
+.split { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--col-gap); align-items: start; }
+@media (max-width: 900px) { .split { grid-template-columns: minmax(0, 1fr); } }
+.h2 { font-size: var(--step-3); font-weight: 700; font-stretch: 112%; letter-spacing: -0.02em; line-height: 1.1; }
+.h3 { font-size: var(--step-1); font-weight: 650; line-height: 1.3; }
+.lead { font-size: var(--step-1); line-height: 1.5; color: var(--ink-2); max-width: 58ch; margin-top: 16px; }
+.fine { font-size: var(--step--1); color: var(--ink-3); }
+.kicker { font-size: 0.75rem; font-weight: 650; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent-strong); margin-bottom: 12px; }
+
+/* Terminal block: every command on the page is selectable with one click. */
+.term { margin: 0; background: var(--term); color: var(--term-ink); border-radius: 10px; padding: 14px 16px; }
+.term code { background: none; color: inherit; padding: 0; font-size: clamp(0.78rem, 1.4vw, 0.9rem); white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; }
+.term .p { color: var(--term-accent); user-select: none; }
+.term .sel { user-select: all; }
+.term .c { color: #8fa39a; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 48px; padding: 12px 22px; border-radius: 10px; border: 0; cursor: pointer;
+  font: 600 1rem/1 var(--font); text-decoration: none; white-space: nowrap;
+  transition: background-color 140ms ease-out, color 140ms ease-out, transform 140ms ease-out;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-strong); }
+.btn-ghost { background: transparent; box-shadow: inset 0 0 0 1px var(--ink); color: var(--ink); }
+.btn-ghost:hover { background: var(--ink); color: var(--paper); }
+.btn:active { transform: translateY(1px); }
+
+.skip { position: absolute; left: -999px; top: 8px; background: var(--ink); color: #fff; padding: 8px 12px; border-radius: 8px; z-index: 10; }
+.skip:focus { left: 8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

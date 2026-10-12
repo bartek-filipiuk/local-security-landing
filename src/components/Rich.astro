@@ -1,0 +1,6 @@
+---
+// Renders `backtick` spans of static copy as <code>. No HTML is injected: parts become text nodes.
+interface Props { text: string }
+const parts = Astro.props.text.split("`");
+---
+{parts.map((part, i) => (i % 2 ? <code>{part}</code> : part))}

@@ -1,0 +1,263 @@
+---
+import { SITE, ROUTES, type Lang } from "../site";
+import { COPY } from "../copy";
+import Rich from "./Rich.astro";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = COPY[lang];
+const r = ROUTES[lang];
+
+// Figures from one real run (2026-10-11) of ai-agent-audit on a working developer laptop.
+const ledger = [
+  { key: "crit", n: 2, label: "2 critical" },
+  { key: "high", n: 28, label: "28 high" },
+  { key: "med", n: 8, label: "8 medium" },
+  { key: "low", n: 2, label: "2 low" },
+];
+const fixFirst = [
+  { title: "SSH private key has NO passphrase: ~/.ssh/id_ed25519_…", meta: "critical · A.1" },
+  { title: "MCP server 'chrome-devtools' launched via npx without pinned version", meta: "high · M.2 · 11 servers" },
+  { title: "Claude Code sessions (last 90d): 38 file(s) contain 35 distinct classified secret(s)", meta: "high · J.2" },
+];
+---
+<section class="hero" id="top">
+  <div class="wrap">
+    <h1>{t.hero.h1}</h1>
+    <div class="split grid">
+      <div>
+        <p class="lead">{t.hero.lead}</p>
+        <ul class="stats">
+          {t.hero.stats.map(([n, label]) => <li><b>{n}</b><span>{label}</span></li>)}
+        </ul>
+        <div class="cta">
+          <a class="btn btn-primary" href="#run">{t.hero.ctaRun}</a>
+          <a class="btn btn-ghost" href="#guide">{t.hero.ctaGuide}</a>
+        </div>
+        <p class="fine hero-fine">{t.hero.fine} <a href={SITE.repo} rel="noopener">{t.hero.repoLink}</a>.</p>
+      </div>
+
+      <figure class="sheet">
+        <div class="sheet-head">
+          <span class="mono">~/.ai-agent-audit/audit-report.md</span>
+          <span class="tag">{t.hero.sheetTag}</span>
+        </div>
+        <p class="score"><b>2</b>/100 <span>F · Pwned-Ready</span></p>
+        <p class="secondary">69 distinct secrets · 15 modules · 2 min 17 s</p>
+        <div class="ledger" role="img" aria-label={ledger.map((l) => l.label).join(", ")}>
+          {ledger.map((l) => <span class={`c-${l.key}`} style={`--n:${l.n}`}></span>)}
+        </div>
+        <ul class="legend">
+          {ledger.map((l) => <li><i class={`c-${l.key}`}></i>{l.label}</li>)}
+        </ul>
+        <p class="label">Fix first</p>
+        <ol class="first">
+          {fixFirst.map((f) => <li><div><strong>{f.title}</strong><small>{f.meta}</small></div></li>)}
+        </ol>
+        <figcaption>{t.hero.sheetCaption}</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="section band" id="why">
+  <div class="wrap">
+    <p class="kicker">{t.why.kicker}</p>
+    <h2 class="h2">{t.why.h2}</h2>
+    <p class="lead">{t.why.lead}</p>
+    <div class="two">
+      <div>
+        <h3 class="h3">{t.why.inTitle}</h3>
+        <ul class="points">{t.why.in.map(([b, rest]) => <li><strong><Rich text={b} /></strong> <Rich text={rest} /></li>)}</ul>
+      </div>
+      <div>
+        <h3 class="h3">{t.why.outTitle}</h3>
+        <ul class="points out">{t.why.out.map(([b, rest]) => <li><strong><Rich text={b} /></strong> <Rich text={rest} /></li>)}</ul>
+      </div>
+    </div>
+    <p class="fine why-fine">{t.why.fine}</p>
+  </div>
+</section>
+
+<section class="section" id="checks">
+  <div class="wrap split">
+    <div>
+      <p class="kicker">{t.checks.kicker}</p>
+      <h2 class="h2">{t.checks.h2}</h2>
+      <p class="lead">{t.checks.lead}</p>
+    </div>
+    <dl class="checks">
+      {t.checks.items.map(([term, desc]) => <div><dt>{term}</dt><dd><Rich text={desc} /></dd></div>)}
+    </dl>
+  </div>
+</section>
+
+<section class="section tint" id="run">
+  <div class="wrap">
+    <article class="offer">
+      <div>
+        <p class="kicker">{t.run.kicker}</p>
+        <h2 class="h2">{t.run.h2}</h2>
+        <p class="note"><Rich text={t.run.note} /></p>
+        <p class="fine"><Rich text={t.run.after} /></p>
+      </div>
+      <ol class="steps">
+        {t.run.steps.map((s) => (
+          <li>
+            <span class="step-label">{s.label}</span>
+            <pre class="term"><code><span class="p">$ </span><span class="sel">{s.cmd}</span></code></pre>
+            {s.alt && (
+              <>
+                <span class="fine alt">{s.alt.label}</span>
+                <pre class="term"><code><span class="p">$ </span><span class="sel">{s.alt.cmd}</span></code></pre>
+              </>
+            )}
+          </li>
+        ))}
+      </ol>
+    </article>
+    <div class="agent">
+      <h3 class="h3">{t.run.agentTitle}</h3>
+      <p>{t.run.agentText}</p>
+      <pre class="term"><code><span class="p">$ </span><span class="sel">{t.run.agentInstall}</span></code></pre>
+      <pre class="term"><code><span class="p">&gt; </span><span class="sel">{t.run.agentPrompt}</span></code></pre>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="data">
+  <div class="wrap split">
+    <div>
+      <p class="kicker">{t.trust.kicker}</p>
+      <h2 class="h2">{t.trust.h2}</h2>
+    </div>
+    <ul class="rows">
+      {t.trust.items.map(([b, rest]) => <li class="yes"><strong>{b}</strong> <Rich text={rest} /></li>)}
+    </ul>
+  </div>
+  <div class="wrap split limits">
+    <h3 class="h3">{t.trust.limitsTitle}</h3>
+    <ul class="rows">
+      {t.trust.limits.map(([b, rest]) => <li class="no"><strong>{b}</strong> <Rich text={rest} /></li>)}
+    </ul>
+  </div>
+</section>
+
+<section class="section band" id="guide">
+  <div class="wrap split">
+    <div>
+      <p class="kicker">{t.signup.kicker}</p>
+      <h2 class="h2">{t.signup.h2}</h2>
+      <p class="lead">{t.signup.lead}</p>
+      <ul class="points gets">{t.signup.items.map(([b, rest]) => <li><strong>{b}</strong> <Rich text={rest} /></li>)}</ul>
+    </div>
+    <form class="signup" method="post" action={SITE.signupAction}>
+      <input type="hidden" name="source" value={r.source} />
+      <input type="hidden" name="next" value={new URL(r.checkEmail, SITE.url).href} />
+      <input type="hidden" name="confirmed" value={new URL(r.guide, SITE.url).href} />
+      <div class="hp" aria-hidden="true">
+        <label>{t.signup.honeypot} <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
+      </div>
+      <label for="email">{t.signup.label}</label>
+      <input id="email" type="email" name="email" required maxlength="254" autocomplete="email" placeholder={t.signup.placeholder} />
+      <button class="btn btn-primary" type="submit">{t.signup.submit}</button>
+      <p class="fine">{t.signup.note} <a href={r.privacy} rel="noopener">{t.signup.privacy}</a>.</p>
+    </form>
+  </div>
+</section>
+
+<section class="section" id="faq">
+  <div class="wrap split">
+    <h2 class="h2">{t.faq.h2}</h2>
+    <div>
+      {t.faq.items.map(([q, a]) => <details><summary>{q}</summary><p><Rich text={a} /></p></details>)}
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero { padding-block: clamp(48px, 7vw, 96px) clamp(56px, 8vw, 104px); }
+  h1 { font-size: var(--step-4); font-weight: 760; font-stretch: 116%; letter-spacing: -0.03em; line-height: 1.02; max-width: 20ch; }
+  .grid { margin-top: clamp(28px, 4vw, 48px); }
+  .hero .lead { margin-top: 0; }
+  .stats { list-style: none; margin: 26px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 24px; }
+  .stats b { display: block; font-size: var(--step-2); white-space: nowrap; font-weight: 760; font-stretch: 112%; letter-spacing: -0.03em; line-height: 1; }
+  .stats span { display: block; margin-top: 6px; font-size: var(--step--1); color: var(--ink-3); line-height: 1.4; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .hero-fine { margin-top: 16px; }
+
+  /* The report sheet: the page's one raised object, and its one motion. */
+  .sheet { margin: 0; background: var(--surface); border-radius: var(--radius); padding: clamp(20px, 3vw, 32px); box-shadow: 0 30px 60px -32px rgba(14, 23, 20, 0.35), 0 4px 12px -4px rgba(14, 23, 20, 0.08); }
+  .sheet-head { display: flex; justify-content: space-between; gap: 12px; align-items: center; color: var(--ink-3); font-size: 0.8rem; }
+  .sheet-head .mono { overflow-wrap: anywhere; }
+  .tag { box-shadow: inset 0 0 0 1px var(--rule); border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+  .score { margin-top: 18px; font-size: 1.1rem; color: var(--ink-2); }
+  .score b { font-size: 3.2rem; font-weight: 760; font-stretch: 112%; letter-spacing: -0.03em; line-height: 1; color: var(--crit); }
+  .score span { margin-left: 10px; font-family: var(--mono); font-size: 0.85rem; color: var(--crit); }
+  .secondary { color: var(--ink-2); font-size: 0.92rem; margin-top: 4px; }
+  .ledger { display: flex; gap: 2px; height: 14px; border-radius: 7px; overflow: hidden; margin-top: 18px; animation: reveal 1100ms cubic-bezier(0.2, 0.7, 0.1, 1) 200ms both; }
+  .ledger span { flex-grow: var(--n); min-width: 6px; }
+  @keyframes reveal { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; list-style: none; padding: 0; margin: 10px 0 0; font-size: 0.8rem; color: var(--ink-2); }
+  .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .c-crit { background: var(--crit); } .c-high { background: var(--high); } .c-med { background: var(--med); } .c-low { background: var(--low); }
+  .label { font-size: 0.72rem; font-weight: 650; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); margin-top: 24px; }
+  .first { list-style: none; counter-reset: n; padding: 0; margin: 6px 0 0; }
+  .first li { counter-increment: n; display: grid; grid-template-columns: 1.8rem minmax(0, 1fr); padding: 12px 0; border-top: 1px solid var(--rule); }
+  .first li::before { content: counter(n); font-weight: 740; font-stretch: 112%; font-size: 1.2rem; line-height: 1.2; color: var(--crit); }
+  .first strong { display: block; font: 500 0.88rem/1.4 var(--mono); overflow-wrap: anywhere; }
+  .first small { display: block; color: var(--ink-3); font-size: 0.8rem; margin-top: 3px; }
+  figcaption { color: var(--ink-3); font-size: 0.8rem; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--rule); }
+
+  .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--col-gap); margin-top: clamp(32px, 5vw, 56px); }
+  @media (max-width: 900px) { .two { grid-template-columns: minmax(0, 1fr); } }
+  .points { list-style: none; margin: 14px 0 0; padding: 0; }
+  .points li { padding: 14px 0 14px 22px; border-top: 1px solid var(--rule); color: var(--ink-2); position: relative; }
+  .points li::before { content: ""; position: absolute; left: 0; top: 1.4em; width: 10px; height: 2px; background: var(--accent); }
+  .points.out li::before { background: var(--crit); }
+  .points strong { color: var(--ink); font-weight: 650; }
+  .why-fine { margin-top: 28px; max-width: 70ch; }
+
+  .checks { margin: 0; display: grid; gap: 0; }
+  .checks div { padding: 16px 0; border-top: 1px solid var(--rule); }
+  .checks div:last-child { border-bottom: 1px solid var(--rule); }
+  .checks dt { font-weight: 650; }
+  .checks dd { margin: 4px 0 0; color: var(--ink-2); }
+
+  .offer { background: var(--surface); border-radius: var(--radius); box-shadow: inset 0 0 0 2px var(--accent); padding: clamp(24px, 5vw, 56px); display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--col-gap); align-items: start; }
+  @media (max-width: 900px) { .offer { grid-template-columns: minmax(0, 1fr); } }
+  .note { margin: 16px 0 18px; color: var(--ink-2); max-width: 42ch; }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 20px; counter-reset: step; }
+  .steps li { counter-increment: step; display: grid; gap: 8px; }
+  .step-label { font-weight: 600; }
+  .step-label::before { content: counter(step) ". "; font-family: var(--mono); color: var(--accent-strong); }
+  .alt { margin-top: 2px; }
+  .agent { margin-top: clamp(28px, 4vw, 40px); display: grid; gap: 10px; max-width: 760px; }
+  .agent p { color: var(--ink-2); }
+
+  .rows { list-style: none; margin: 0; padding: 0; }
+  .rows li { padding: 16px 0 16px 32px; border-top: 1px solid var(--rule); color: var(--ink-2); position: relative; }
+  .rows li:last-child { border-bottom: 1px solid var(--rule); }
+  .rows strong { color: var(--ink); font-weight: 650; }
+  .rows li::before { position: absolute; left: 0; top: 15px; font: 700 1rem var(--mono); }
+  .yes::before { content: "✓"; color: var(--accent); }
+  .no::before { content: "–"; color: var(--ink-3); }
+  .limits { margin-top: clamp(48px, 7vw, 80px); }
+
+  .gets { margin-top: 18px; }
+  .signup { background: var(--paper); border-radius: var(--radius); padding: clamp(24px, 4vw, 40px); display: grid; gap: 12px; box-shadow: inset 0 0 0 2px var(--accent); }
+  .signup label { font-weight: 600; }
+  .signup input[type="email"] { font: 400 1.05rem var(--font); min-height: 52px; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--ink-3); background: var(--surface); color: var(--ink); width: 100%; }
+  .signup input[type="email"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .signup .btn { width: 100%; }
+  .hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+
+  details { border-top: 1px solid var(--rule); }
+  details:last-child { border-bottom: 1px solid var(--rule); }
+  summary { cursor: pointer; list-style: none; padding: 18px 36px 18px 0; font-weight: 600; font-size: var(--step-1); line-height: 1.35; position: relative; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: ""; position: absolute; right: 6px; top: 50%; width: 10px; height: 10px; border-right: 2px solid var(--ink-2); border-bottom: 2px solid var(--ink-2); transform: translateY(-70%) rotate(45deg); transition: transform 160ms ease-out; }
+  details[open] summary::after { transform: translateY(-30%) rotate(225deg); }
+  summary:hover { color: var(--accent-strong); }
+  details p { padding: 0 0 20px; color: var(--ink-2); max-width: 66ch; }
+</style>

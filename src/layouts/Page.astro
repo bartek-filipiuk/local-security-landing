@@ -1,0 +1,24 @@
+---
+// Subpages (check-email, guide, 404): same chrome as the landing, one narrow text column.
+import Base from "./Base.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import type { Lang } from "../site";
+
+interface Props { lang: Lang; title: string; description: string; alternate: string; noindex?: boolean }
+const { lang, title, description, alternate, noindex = true } = Astro.props;
+---
+<Base lang={lang} title={title} description={description} alternate={alternate} noindex={noindex}>
+  <Header lang={lang} alternate={alternate} />
+  <main id="tresc" class="wrap page"><slot /></main>
+  <Footer lang={lang} />
+</Base>
+
+<style is:global>
+  .page { max-width: 760px; padding-block: clamp(48px, 7vw, 96px); }
+  .page h1 { font-size: var(--step-3); font-weight: 760; font-stretch: 112%; letter-spacing: -0.02em; line-height: 1.1; }
+  .page h2 { font-size: var(--step-2); font-weight: 700; font-stretch: 108%; line-height: 1.2; margin-top: clamp(40px, 6vw, 64px); }
+  .page p { margin-top: 14px; color: var(--ink-2); }
+  .page .term { margin-top: 12px; }
+  .page .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+</style>

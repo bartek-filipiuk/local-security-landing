@@ -1,0 +1,6 @@
+# Supply-chain hygiene: do not install versions published in the last 24 hours,
+# and run install scripts only for the packages that need them.
+minimumReleaseAge: 1440
+onlyBuiltDependencies:
+  - esbuild
+  - sharp

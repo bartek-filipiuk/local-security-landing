@@ -1,0 +1,53 @@
+---
+import { GUIDE } from "../guide";
+import Rich from "./Rich.astro";
+import type { Lang } from "../site";
+
+interface Props { lang: Lang }
+const g = GUIDE[Astro.props.lang];
+---
+<p class="kicker">ai-agent-audit</p>
+<h1>{g.h1}</h1>
+{g.intro.map((p) => <p class="intro"><Rich text={p} /></p>)}
+
+<nav class="toc" aria-label={g.labels.toc}>
+  <ol>{g.steps.map((s, i) => <li><a href={`#k${i + 1}`}>{s.title}</a></li>)}</ol>
+</nav>
+
+{g.steps.map((s, i) => (
+  <section class="step" id={`k${i + 1}`}>
+    <h2><span class="n">{i + 1}</span>{s.title}</h2>
+    <p class="finding"><span>{g.labels.finding}:</span> <code>{s.finding}</code></p>
+    <p><Rich text={s.why} /></p>
+    {s.do.map((b) =>
+      "cmd" in b ? <pre class="term"><code><span class="p">$ </span><span class="sel">{b.cmd}</span></code></pre>
+      : "file" in b ? <pre class="term"><code><span class="c"># {b.file}</span>{"\n"}<span class="sel">{b.body}</span></code></pre>
+      : <p><Rich text={b.p} /></p>
+    )}
+    {s.check && (
+      <div class="check">
+        <p class="tag">{g.labels.check}</p>
+        <pre class="term"><code><span class="p">$ </span><span class="sel">{s.check}</span></code></pre>
+      </div>
+    )}
+    <p class="trap"><strong>{g.labels.trap}:</strong> <Rich text={s.trap} /></p>
+  </section>
+))}
+
+<h2>{g.outro.h2}</h2>
+{g.outro.p.map((p) => <p><Rich text={p} /></p>)}
+
+<style>
+  .intro { font-size: var(--step-1); line-height: 1.5; }
+  .toc { margin-top: 28px; padding: 18px 22px; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); }
+  .toc ol { margin: 0; padding-left: 1.4em; display: grid; gap: 6px; }
+  .toc a { color: var(--ink); }
+  .step h2 { display: flex; gap: 14px; align-items: baseline; }
+  .n { font-family: var(--mono); color: var(--accent); font-size: 0.85em; }
+  .finding { font-size: var(--step--1); }
+  .finding span { color: var(--ink-3); }
+  .check { margin-top: 18px; }
+  .check .tag { margin: 0; font-size: 0.72rem; font-weight: 650; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent-strong); }
+  .trap { margin-top: 18px; padding: 14px 16px; border-left: 3px solid var(--med); background: var(--surface); border-radius: 0 10px 10px 0; }
+  .trap strong { color: var(--ink); }
+</style>

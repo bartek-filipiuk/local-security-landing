@@ -1,0 +1,46 @@
+---
+import "@fontsource-variable/archivo/wdth.css";
+import "@fontsource-variable/jetbrains-mono";
+import "../styles/global.css";
+import type { Lang } from "../site";
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  /** The other language's version of this page, for hreflang and the language switch. */
+  alternate?: string;
+  /** Pages reached only from the signup flow stay out of search results. */
+  noindex?: boolean;
+}
+const { lang, title, description, alternate, noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const skip = lang === "pl" ? "Przejdź do treści" : "Skip to content";
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} />
+    {alternate && <link rel="alternate" hreflang={lang === "pl" ? "en" : "pl"} href={new URL(alternate, Astro.site)} />}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={lang === "pl" ? "pl_PL" : "en_US"} />
+    <meta property="og:image" content={new URL("/og.png", Astro.site)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#f4f6f5" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <a class="skip" href="#tresc">{skip}</a>
+    <slot />
+  </body>
+</html>

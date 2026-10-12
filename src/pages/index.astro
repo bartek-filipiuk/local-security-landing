@@ -1,0 +1,13 @@
+---
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Landing from "../components/Landing.astro";
+import Footer from "../components/Footer.astro";
+import { COPY } from "../copy";
+const t = COPY.pl;
+---
+<Base lang="pl" title={t.meta.title} description={t.meta.description} alternate="/en/">
+  <Header lang="pl" alternate="/en/" />
+  <main id="tresc"><Landing lang="pl" /></main>
+  <Footer lang="pl" />
+</Base>

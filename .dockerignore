@@ -1,0 +1,12 @@
+node_modules
+dist
+.astro
+.git
+.github
+.env
+.env.*
+.coolify.env
+.vscode
+.idea
+.DS_Store
+*.md

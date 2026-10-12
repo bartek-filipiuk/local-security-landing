@@ -1,0 +1,7 @@
+---
+import Page from "../../layouts/Page.astro";
+import GuideBody from "../../components/GuideBody.astro";
+import { GUIDE } from "../../guide";
+const g = GUIDE.en;
+---
+<Page lang="en" title={g.title} description={g.description} alternate="/poradnik/"><GuideBody lang="en" /></Page>

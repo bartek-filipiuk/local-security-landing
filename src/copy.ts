@@ -1,0 +1,278 @@
+// All landing copy, both languages, same shape. Components only render it.
+import { SITE } from "./site";
+
+const pl = {
+  meta: {
+    title: "ai-agent-audit · co agent AI może zabrać z Twojego komputera",
+    description:
+      "Darmowy skrypt open source, który sprawdza, do czego na Twoim komputerze mają dostęp agenci AI i złośliwe paczki: klucze SSH, tokeny, sekrety w historii rozmów, serwery MCP. Działa lokalnie, na Linuksie i macOS.",
+  },
+  nav: [
+    // Section ids are shared by both languages.
+    ["#why", "Dlaczego"],
+    ["#checks", "Co sprawdza"],
+    ["#run", "Uruchom"],
+    ["#data", "Twoje dane"],
+    ["#guide", "Poradnik"],
+    ["#faq", "Pytania"],
+  ],
+  langSwitch: { label: "EN", title: "English version" },
+  hero: {
+    h1: "Sprawdź, co agent AI może zabrać z Twojego komputera.",
+    lead: "Darmowy skrypt, który przegląda Twój komputer tak, jak zrobiłby to złośliwy pakiet npm albo przejęty serwer MCP: klucze, tokeny, sekrety zapisane w historii rozmów z agentami. Potem mówi, co poprawić i w jakiej kolejności.",
+    stats: [
+      ["~2 min", "pełny przebieg na laptopie z dużą historią sesji agentów"],
+      ["15", "modułów: od kluczy SSH po serwery MCP"],
+      ["0", "wartości sekretów w raporcie, tylko odciski"],
+    ],
+    ctaRun: "Uruchom audyt",
+    ctaGuide: "Poradnik naprawy",
+    fine: "Open source, licencja MIT. Linux, macOS i WSL2.",
+    repoLink: "Kod na GitHubie",
+    sheetTag: "prawdziwy przebieg",
+    sheetCaption:
+      "Fragment raportu z laptopa dewelopera, który codziennie pracuje z Claude Code i Codexem. Ścieżki skrócone. Raporty są po angielsku.",
+  },
+  why: {
+    kicker: "Dlaczego",
+    h2: "Nikt nie musi się do Ciebie włamywać",
+    lead: "Prawie każde znalezisko jest groźne dopiero wtedy, gdy obcy kod działa na Twoim komputerze. Problem w tym, że uruchamiasz cudzy kod codziennie.",
+    inTitle: "Jak obcy kod trafia na Twój komputer",
+    in: [
+      ["npx bez wersji.", "Serwer MCP uruchamiany jako `npx paczka@latest` pobiera najnowszą wersję przy każdym starcie agenta. Gdy ktoś przejmie konto autora paczki, jego kod uruchomi się u Ciebie przy następnym starcie."],
+      ["npm install.", "Skrypty `postinstall` w zależnościach wykonują się same. Tak działały ataki s1ngularity i Shai-Hulud."],
+      ["Sklonowane repozytorium.", "Hooki w `.claude/settings.json` albo ukryte instrukcje w `CLAUDE.md` działają, gdy tylko otworzysz w nim agenta."],
+      ["Skill albo rozszerzenie.", "Polecenie `curl … | sh` w skillu, którego nikt nie przeczytał przed instalacją."],
+    ],
+    outTitle: "Co ten kod zabiera",
+    out: [
+      ["Klucze SSH bez hasła,", "czyli od razu dostęp do Twoich serwerów."],
+      ["Tokeny npm i GitHub.", "Nimi publikuje zainfekowane paczki w Twoim imieniu, więc atak idzie dalej, na innych."],
+      ["Sekrety z historii rozmów.", "Klucze API wklejone kiedyś do Claude Code albo Codexa leżą w plikach sesji, w miejscach, które każdy skrypt zna."],
+      ["Pliki `.env` i konfiguracje MCP", "z kluczami zapisanymi otwartym tekstem."],
+    ],
+    fine: "Przykład z sierpnia 2025: zainfekowane paczki Nx (s1ngularity) użyły zainstalowanych lokalnie agentów AI do zebrania 2349 danych dostępowych z 1079 komputerów.",
+  },
+  checks: {
+    kicker: "Co sprawdza",
+    h2: "15 modułów, jedno pytanie każdy",
+    lead: "Każde znalezisko ma opis, dlaczego jest ważne, i konkretny krok naprawy.",
+    items: [
+      ["Klucze i tokeny", "Klucze SSH bez hasła, dostęp do chmur (AWS, GCP, Azure, Kubernetes), tokeny npm, PyPI, GitHub i GitLab, pliki `.env`, `.netrc` i `.pgpass`."],
+      ["Historia i sesje agentów", "Sekrety w historii powłoki i w zapisach rozmów Claude Code, Codex, Gemini CLI, Cursor, Aider i Cline. Każdy rozpoznany z nazwy usługi, z podpowiedzią, gdzie go zmienić."],
+      ["Serwery MCP", "Każdy serwer z każdej konfiguracji: jak startuje (npx z wersją albo bez, uvx, docker, zdalny) i czy trzyma klucze otwartym tekstem."],
+      ["Ustawienia agentów", "Tryb bez pytania o zgodę, aliasy w rodzaju `--dangerously-skip-permissions`, hooki, własny `ANTHROPIC_BASE_URL`."],
+      ["Repozytoria", "Hooki i uprawnienia w `.claude/` i `.cursor/`, instrukcje ukryte w `CLAUDE.md` i `AGENTS.md`, znaki niewidoczne dla oka."],
+      ["Skille", "Świeżo zainstalowane skille, polecenia `curl | sh`, instrukcje w rodzaju „nie mów użytkownikowi”."],
+      ["Znane ataki", "Wersje paczek z potwierdzonych ataków (Nx, axios, @bitwarden/cli), ślady Shai-Hulud w `node_modules` i na Twoim koncie GitHub."],
+      ["System", "Grupa docker, sudo bez hasła, firewall, kopia zapasowa, izolacja, odblokowany menedżer haseł. Na macOS także uprawnienia TCC, LaunchAgents i szyfrowanie kopii Time Machine."],
+    ],
+  },
+  run: {
+    kicker: "Uruchom",
+    h2: "Trzy komendy, bez instalacji",
+    note: "Żadnych zależności do doinstalowania. Potrzebny jest bash 4.4 lub nowszy; na macOS: `brew install bash`. Pakiet jq przyspiesza i uściśla część sprawdzeń, ale nie jest wymagany.",
+    steps: [
+      { label: "Pobierz", cmd: SITE.clone },
+      { label: "Uruchom", cmd: SITE.run, alt: { label: "na macOS:", cmd: SITE.runMac } },
+      { label: "Zacznij od listy kroków", cmd: "less ~/.ai-agent-audit/action-plan.md" },
+    ],
+    after: "Raport HTML otworzy się sam w przeglądarce. Plik `action-plan.md` układa zadania na dziś, na ten tydzień i na ten miesiąc.",
+    agentTitle: "Wolisz przez agenta?",
+    agentText: "Zainstaluj jako skill i poproś Claude Code o przeprowadzenie przez wynik:",
+    agentInstall: "git clone https://github.com/bartek-filipiuk/ai-agent-audit.git ~/.claude/skills/ai-agent-audit",
+    agentPrompt: "Uruchom skill ai-agent-audit, a potem przeprowadź mnie przez plan działania od najważniejszego punktu, po jednym na raz.",
+  },
+  trust: {
+    kicker: "Twoje dane",
+    h2: "Co skrypt robi z tym, co znajdzie",
+    items: [
+      ["Tylko czyta.", "Zapisuje wyłącznie do `~/.ai-agent-audit/` (albo katalogu z flagi `--output`), z uprawnieniami tylko dla Ciebie."],
+      ["Nie zapisuje sekretów.", "W raporcie są ścieżki, typy i odciski w rodzaju `ghp_****wxyz` (40 znaków). Tyle wystarczy, żeby znaleźć klucz w panelu dostawcy, ale nie żeby go użyć."],
+      ["Nic nie wysyła autorowi.", "Brak telemetrii i analityki. Połączenia z siecią robią tylko Twoje własne gh i npm, jeśli są zalogowane: pytają GitHub i npm o uprawnienia tokenu i listę Twoich repozytoriów."],
+      ["Niczego nie naprawia sam.", "Każdą zmianę robisz Ty. Wyjątek to osobny skrypt `purge-secrets.sh`, który zamazuje sekrety w historii. Bez flagi `--purge` tylko pokazuje, co by zrobił."],
+      ["Możesz go przeczytać.", "To około 4700 linii basha w jednym repozytorium. Przeczytaj je przed uruchomieniem, jak każdy kod z internetu, albo daj do przeczytania swojemu agentowi."],
+    ],
+    limitsTitle: "Czego nie robi",
+    limits: [
+      ["Nie sprawdza, czy klucz nadal działa.", "Nie łączy się z dostawcami, więc każdy znaleziony klucz traktuj jak aktywny."],
+      ["Myli się.", "Przykładowe tokeny z dokumentacji i testów też pasują do wzorców. Odcisk pomaga: `ghp_****1234` to raczej atrapa."],
+      ["Patrzy tylko na ten komputer.", "Serwery i CI sprawdzasz osobno."],
+      ["Zna tylko opisane ataki.", "Listę zainfekowanych wersji uzupełniamy ręcznie. O nowych piszemy na liście mailowej."],
+      ["Ocenia surowo.", "Każdy serwer MCP bez wersji liczy się osobno, więc kilka punktów na 100 przy pierwszym przebiegu nie jest rzadkie. Liczy się lista kroków, nie sam wynik."],
+    ],
+  },
+  signup: {
+    kicker: "Poradnik i alerty",
+    h2: "Co zrobić z wynikiem",
+    lead: "Zostaw e-mail, a dostaniesz:",
+    items: [
+      ["Od razu po potwierdzeniu:", "poradnik „Naprawa po audycie”. Osiem kroków od najważniejszego, każdy z komendą, sposobem sprawdzenia i pułapką, na którą łatwo trafić. Większość zajmuje kilka minut."],
+      ["Potem tylko wtedy, gdy coś wybuchnie:", "krótki mail o nowym ataku na łańcuch dostaw (robak w npm, przejęty serwer MCP, zainfekowane rozszerzenie) z jedną komendą, którą sprawdzisz, czy Cię dotyczy."],
+      ["Nic więcej.", "Bez cotygodniowego newslettera. Wypisujesz się jednym kliknięciem."],
+    ],
+    label: "Twój e-mail",
+    placeholder: "ty@example.com",
+    submit: "Wyślij poradnik",
+    honeypot: "Zostaw to pole puste",
+    note: "Wyślemy mail z linkiem potwierdzającym; adres trafia na listę dopiero po kliknięciu. Administratorem danych jest Bartłomiej Filipiuk Devins (marka Devince).",
+    privacy: "Polityka prywatności",
+  },
+  faq: {
+    h2: "Pytania",
+    items: [
+      ["Czy uruchomienie tego jest bezpieczne?", "Skrypt tylko czyta pliki i zapisuje raport do jednego katalogu. Niczego nie pobiera w trakcie działania. Przed uruchomieniem możesz przeczytać kod na GitHubie albo poprosić o to swojego agenta."],
+      ["Ile to trwa?", "Na laptopie autora, z kilkuset megabajtami zapisanych sesji agentów: 2 minuty 17 sekund. Najdłużej trwa przeszukiwanie historii rozmów. Pojedyncze moduły uruchomisz flagą `--modules`, na przykład `--modules M` dla samych serwerów MCP."],
+      ["Czy działa na Windowsie?", "Przez WSL2, jako Linux. Natywnego Windowsa nie obsługuje."],
+      ["Mam kilka punktów na 100. Jest aż tak źle?", "Wynik jest celowo surowy: każdy serwer MCP bez wersji i każdy plik z sekretem odejmuje punkty osobno. Nie patrz na liczbę, tylko na `action-plan.md`. Zwykle kilka pierwszych kroków (hasło na kluczu SSH, przypięte wersje MCP, wylogowany npm) usuwa większość ryzyka."],
+      ["Skrypt znalazł mój klucz w historii rozmów. Co teraz?", "Najpierw zmień klucz u dostawcy; raport podaje, gdzie. Dopiero potem wyczyść historię skryptem `purge-secrets.sh`. Kolejność jest ważna: zamazany, ale wciąż ważny klucz dalej działa, jeśli ktoś skopiował go wcześniej."],
+      ["Czym różni się od security-audit.dev?", "security-audit.dev sprawdza kod Twojej aplikacji. ai-agent-audit sprawdza komputer, na którym ten kod piszesz. Oba są darmowe i open source."],
+      ["Jak mogę pomóc?", "Zgłoś na GitHubie fałszywy alarm albo coś, co skrypt przeoczył. Słabość w samym narzędziu zgłoś prywatnie, według pliku SECURITY.md w repozytorium."],
+      ["Czy mogę używać go w pracy i u klientów?", "Tak. Licencja MIT: używasz, zmieniasz i rozwijasz, także komercyjnie."],
+    ],
+  },
+  footer: {
+    disclaimer: "ai-agent-audit to narzędzie, a nie gwarancja bezpieczeństwa.",
+    siteCode: "Kod tej strony",
+    noTracking: "Bez ciasteczek i analityki",
+  },
+};
+
+export type Copy = typeof pl;
+
+const en: Copy = {
+  meta: {
+    title: "ai-agent-audit · what an AI agent can take from your machine",
+    description:
+      "A free, open source script that checks what AI agents and malicious packages can reach on your machine: SSH keys, tokens, secrets in agent chat history, MCP servers. Runs locally on Linux and macOS.",
+  },
+  nav: [
+    ["#why", "Why"],
+    ["#checks", "What it checks"],
+    ["#run", "Run it"],
+    ["#data", "Your data"],
+    ["#guide", "Guide"],
+    ["#faq", "FAQ"],
+  ],
+  langSwitch: { label: "PL", title: "Wersja polska" },
+  hero: {
+    h1: "Find out what an AI agent can take from your machine.",
+    lead: "A free script that looks at your machine the way a malicious npm package or a hijacked MCP server would: keys, tokens, secrets saved in your chats with coding agents. Then it tells you what to fix, in order.",
+    stats: [
+      ["~2 min", "for a full run on a laptop with a large agent history"],
+      ["15", "modules, from SSH keys to MCP servers"],
+      ["0", "secret values in the report, fingerprints only"],
+    ],
+    ctaRun: "Run the audit",
+    ctaGuide: "Fix-it guide",
+    fine: "Open source, MIT licence. Linux, macOS and WSL2.",
+    repoLink: "Code on GitHub",
+    sheetTag: "real run",
+    sheetCaption: "Excerpt from a report on a developer laptop used daily with Claude Code and Codex. Paths shortened.",
+  },
+  why: {
+    kicker: "Why",
+    h2: "Nobody has to break in",
+    lead: "Almost every finding only matters once foreign code runs on your machine. The catch: you run other people's code every day.",
+    inTitle: "How foreign code gets onto your machine",
+    in: [
+      ["npx without a version.", "An MCP server started as `npx package@latest` downloads the newest release every time your agent starts. If someone takes over the author's account, their code runs on your machine on the next start."],
+      ["npm install.", "`postinstall` scripts in dependencies run on their own. That is how the s1ngularity and Shai-Hulud attacks worked."],
+      ["A cloned repository.", "Hooks in `.claude/settings.json` or hidden instructions in `CLAUDE.md` take effect as soon as you open an agent in it."],
+      ["A skill or an extension.", "A `curl … | sh` line in a skill nobody read before installing it."],
+    ],
+    outTitle: "What that code takes",
+    out: [
+      ["SSH keys without a passphrase:", "instant access to your servers."],
+      ["npm and GitHub tokens.", "With them it publishes infected packages in your name, so the attack spreads to others."],
+      ["Secrets from agent chat history.", "API keys you once pasted into Claude Code or Codex sit in session files, in places every script knows."],
+      ["Files like `.env` and MCP configs", "holding keys in plain text."],
+    ],
+    fine: "Example from August 2025: infected Nx packages (s1ngularity) used locally installed AI agents to collect 2,349 credentials from 1,079 machines.",
+  },
+  checks: {
+    kicker: "What it checks",
+    h2: "15 modules, one question each",
+    lead: "Every finding says why it matters and gives one concrete fix.",
+    items: [
+      ["Keys and tokens", "SSH keys without a passphrase, cloud access (AWS, GCP, Azure, Kubernetes), npm, PyPI, GitHub and GitLab tokens, `.env`, `.netrc` and `.pgpass` files."],
+      ["Agent history and sessions", "Secrets in shell history and in Claude Code, Codex, Gemini CLI, Cursor, Aider and Cline transcripts. Each one named by service, with a pointer to where you rotate it."],
+      ["MCP servers", "Every server in every config: how it starts (npx pinned or not, uvx, docker, remote) and whether it keeps keys in plain text."],
+      ["Agent settings", "Skip-permission modes, aliases like `--dangerously-skip-permissions`, hooks, a custom `ANTHROPIC_BASE_URL`."],
+      ["Repositories", "Hooks and permissions in `.claude/` and `.cursor/`, instructions hidden in `CLAUDE.md` and `AGENTS.md`, invisible characters."],
+      ["Skills", "Recently installed skills, `curl | sh` commands, instructions like “don't tell the user”."],
+      ["Known attacks", "Package versions from confirmed attacks (Nx, axios, @bitwarden/cli), Shai-Hulud traces in `node_modules` and on your GitHub account."],
+      ["System", "docker group, passwordless sudo, firewall, backups, isolation, an unlocked password manager. On macOS also TCC permissions, LaunchAgents and Time Machine encryption."],
+    ],
+  },
+  run: {
+    kicker: "Run it",
+    h2: "Three commands, nothing to install",
+    note: "No dependencies to add. You need bash 4.4 or newer; on macOS: `brew install bash`. jq makes some checks faster and more precise, but is optional.",
+    steps: [
+      { label: "Download", cmd: SITE.clone },
+      { label: "Run", cmd: SITE.run, alt: { label: "on macOS:", cmd: SITE.runMac } },
+      { label: "Start with the action plan", cmd: "less ~/.ai-agent-audit/action-plan.md" },
+    ],
+    after: "The HTML report opens in your browser on its own. `action-plan.md` sorts the work into today, this week and this month.",
+    agentTitle: "Prefer an agent?",
+    agentText: "Install it as a skill and ask Claude Code to walk you through the result:",
+    agentInstall: "git clone https://github.com/bartek-filipiuk/ai-agent-audit.git ~/.claude/skills/ai-agent-audit",
+    agentPrompt: "Run the ai-agent-audit skill, then walk me through the action plan from the top, one item at a time.",
+  },
+  trust: {
+    kicker: "Your data",
+    h2: "What the script does with what it finds",
+    items: [
+      ["Read-only.", "It writes only to `~/.ai-agent-audit/` (or the `--output` directory), readable by you alone."],
+      ["Stores no secrets.", "The report holds paths, types and fingerprints like `ghp_****wxyz` (40 chars): enough to find the key in your provider's panel, not enough to use it."],
+      ["Sends nothing to the author.", "No telemetry, no analytics. The only network calls come from your own gh and npm, if logged in: they ask GitHub and npm about your token scopes and your repository list."],
+      ["Fixes nothing by itself.", "You make every change. The exception is the separate `purge-secrets.sh`, which redacts secrets in your history; without `--purge` it only shows what it would do."],
+      ["You can read it.", "About 4,700 lines of bash in one repository. Read it before you run it, like any code from the internet, or hand it to your agent to read."],
+    ],
+    limitsTitle: "What it does not do",
+    limits: [
+      ["It does not check whether a key still works.", "It never contacts providers, so treat every key it finds as live."],
+      ["It gets things wrong.", "Example tokens from docs and tests match the patterns too. The fingerprint helps: `ghp_****1234` is probably a dummy."],
+      ["It only looks at this machine.", "Servers and CI need their own check."],
+      ["It only knows documented attacks.", "The list of infected versions is updated by hand. New ones go out on the mailing list."],
+      ["It scores harshly.", "Every unpinned MCP server counts separately, so a single-digit score on the first run is common. The action plan matters, not the number."],
+    ],
+  },
+  signup: {
+    kicker: "Guide and alerts",
+    h2: "What to do with the result",
+    lead: "Leave your email and you get:",
+    items: [
+      ["Right after you confirm:", "the “Fixing what the audit found” guide. Eight steps, most important first, each with the command, how to check it worked, and the trap that is easy to fall into. Most take a few minutes."],
+      ["After that, only when something breaks:", "a short email about a new supply-chain attack (an npm worm, a hijacked MCP server, an infected extension) with one command that tells you whether it affects you."],
+      ["Nothing else.", "No weekly newsletter. Unsubscribe with one click."],
+    ],
+    label: "Your email",
+    placeholder: "you@example.com",
+    submit: "Send me the guide",
+    honeypot: "Leave this field empty",
+    note: "We send an email with a confirmation link; your address joins the list only after you click it. The data controller is Bartłomiej Filipiuk Devins (Devince).",
+    privacy: "Privacy policy",
+  },
+  faq: {
+    h2: "FAQ",
+    items: [
+      ["Is it safe to run?", "The script only reads files and writes a report to one directory. It downloads nothing while it runs. Read the code on GitHub first, or ask your agent to."],
+      ["How long does it take?", "On the author's laptop, with a few hundred megabytes of saved agent sessions: 2 minutes 17 seconds. Searching chat history takes longest. Run single modules with `--modules`, for example `--modules M` for MCP servers only."],
+      ["Does it work on Windows?", "Through WSL2, as Linux. Native Windows is not supported."],
+      ["My score is in single digits. Is it that bad?", "The score is harsh on purpose: every unpinned MCP server and every file with a secret costs points separately. Look at `action-plan.md`, not the number. The first few steps (a passphrase on your SSH key, pinned MCP versions, logging out of npm) usually remove most of the risk."],
+      ["It found my key in chat history. Now what?", "Rotate the key with the provider first; the report says where. Only then clean the history with `purge-secrets.sh`. The order matters: a redacted key that is still valid keeps working for anyone who copied it before."],
+      ["How is this different from security-audit.dev?", "security-audit.dev checks your application's code. ai-agent-audit checks the machine you write that code on. Both are free and open source."],
+      ["How can I help?", "Report a false alarm or something the script missed as a GitHub issue. Report a weakness in the tool itself privately, as described in SECURITY.md."],
+      ["Can I use it at work and for clients?", "Yes. MIT licence: use it, change it, extend it, commercially too."],
+    ],
+  },
+  footer: {
+    disclaimer: "ai-agent-audit is a tool, not a guarantee of security.",
+    siteCode: "Site code",
+    noTracking: "No cookies, no analytics",
+  },
+};
+
+export const COPY: Record<"pl" | "en", Copy> = { pl, en };

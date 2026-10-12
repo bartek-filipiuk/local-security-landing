@@ -1,0 +1,38 @@
+---
+import { SITE, ROUTES, type Lang } from "../site";
+import { COPY } from "../copy";
+
+interface Props { lang: Lang; alternate: string }
+const { lang, alternate } = Astro.props;
+const t = COPY[lang];
+const home = ROUTES[lang].home;
+---
+<header class="top">
+  <div class="wrap row">
+    <a class="brand" href={home}>
+      <span class="mark" aria-hidden="true">~/</span><span>ai-agent-audit</span>
+    </a>
+    <nav aria-label={lang === "pl" ? "Sekcje" : "Sections"}>
+      {t.nav.map(([href, label]) => <a href={`${home}${href}`}>{label}</a>)}
+    </nav>
+    <a class="lang" href={alternate} hreflang={lang === "pl" ? "en" : "pl"} title={t.langSwitch.title}>{t.langSwitch.label}</a>
+    <a class="btn btn-primary cta-header" href={SITE.repo} rel="noopener">GitHub</a>
+  </div>
+</header>
+
+<style>
+  .top { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--rule); }
+  .row { display: flex; align-items: center; gap: 22px; height: var(--header-h); }
+  .brand { display: inline-flex; align-items: center; min-height: 44px; font: 600 1rem var(--mono); text-decoration: none; letter-spacing: -0.01em; white-space: nowrap; }
+  .mark { color: var(--accent); }
+  nav { display: flex; gap: 20px; margin-left: auto; font-size: 0.95rem; }
+  nav a { text-decoration: none; color: var(--ink-2); padding-block: 6px; }
+  nav a:hover { color: var(--ink); text-decoration: underline; text-decoration-color: var(--accent); }
+  .lang { font: 600 0.85rem var(--mono); text-decoration: none; color: var(--ink-2); padding: 10px 6px; }
+  .lang:hover { color: var(--accent-strong); }
+  .cta-header { min-height: 44px; padding: 10px 16px; font-size: 0.95rem; }
+  @media (max-width: 900px) {
+    nav { display: none; }
+    .lang { margin-left: auto; }
+  }
+</style>
