@@ -88,6 +88,7 @@ const pl: Guide = {
         { cmd: "bash ai-agent-audit/scripts/purge-secrets.sh" },
         { cmd: "bash ai-agent-audit/scripts/purge-secrets.sh --purge" },
       ],
+      check: "bash ai-agent-audit/scripts/run-audit.sh --modules J   # sekretów w historii powinno być wyraźnie mniej",
       trap: "Czyszczenie bez rotacji nic nie daje: historia mogła być już skopiowana, a treść rozmów trafiła wcześniej do dostawcy modelu. Kopie oryginałów w `~/.ai-agent-audit/purge-backups/` zawierają sekrety; usuń je po sprawdzeniu.",
     },
     {
@@ -97,10 +98,11 @@ const pl: Guide = {
       do: [
         { p: "W Claude Code komenda `/sandbox` włącza piaskownicę dla poleceń Basha: zapis tylko w katalogu projektu, sieć tylko do dozwolonych domen. Na Linuksie potrzebne są pakiety bubblewrap i socat:" },
         { cmd: "sudo apt-get install bubblewrap socat" },
-        { p: "Ważne: domyślnie piaskownica nie blokuje odczytu, więc agent nadal widzi `~/.ssh` i `~/.aws`. Dopisz katalogi z kluczami do `sandbox.filesystem.denyRead` w ustawieniach (opis w dokumentacji Claude Code: code.claude.com/docs/en`/sandbox`ing)." },
+        { p: "Ważne: domyślnie piaskownica nie blokuje odczytu, więc agent nadal widzi `~/.ssh` i `~/.aws`. Dopisz katalogi z kluczami do `sandbox.filesystem.denyRead` w ustawieniach (opis w dokumentacji Claude Code: `https://code.claude.com/docs/en/sandboxing`)." },
         { p: "Serwery MCP i hooki działają poza piaskownicą. Dlatego przypięte wersje MCP (krok 3) to osobny krok." },
         { p: "Zanim otworzysz agenta w sklonowanym repozytorium, zajrzyj do `.claude/settings.json`, `.mcp.json` i `CLAUDE.md`. Do naprawdę obcego kodu użyj devcontainera albo osobnej maszyny wirtualnej." },
       ],
+      check: "jq .sandbox ~/.claude/settings.json   # \"enabled\": true i Twoje katalogi w filesystem.denyRead",
       trap: "Piaskownica nie jest pełną izolacją. Szerokie domeny na liście dozwolonych (np. github.com) nadal pozwalają wysłać dane na zewnątrz.",
     },
     {
@@ -109,7 +111,12 @@ const pl: Guide = {
       why: "Skrypt, który coś ukradł, musi to gdzieś wysłać. Firewall aplikacyjny pyta o każde nowe połączenie wychodzące i pozwala odmówić.",
       do: [
         { p: "Linux: OpenSnitch. macOS: LuLu (darmowy, open source) albo Little Snitch. Przez pierwsze dni zatwierdzasz połączenia programów, których używasz; potem pytań jest mało." },
+        { p: "Linux (Debian, Ubuntu): pobierz `opensnitch_*_amd64.deb` i `python3-opensnitch-ui_*_all.deb` ze strony github.com/evilsocket/opensnitch/releases, potem w tym samym katalogu:" },
+        { cmd: "sudo apt install ./opensnitch_*_amd64.deb ./python3-opensnitch-ui_*_all.deb" },
+        { p: "macOS:" },
+        { cmd: "brew install --cask lulu" },
       ],
+      check: "systemctl is-active opensnitch   # active (na macOS: ikona LuLu na pasku menu)",
       trap: "Nie złapie wysyłki przez serwery, którym ufasz, np. github.com z Twoim tokenem. Tak działał Shai-Hulud. Dlatego krok 2 jest wcześniej.",
     },
     {
@@ -215,6 +222,7 @@ const en: Guide = {
         { cmd: "bash ai-agent-audit/scripts/purge-secrets.sh" },
         { cmd: "bash ai-agent-audit/scripts/purge-secrets.sh --purge" },
       ],
+      check: "bash ai-agent-audit/scripts/run-audit.sh --modules J   # far fewer secrets left in history",
       trap: "Cleaning without rotating achieves nothing: the history may already be copied, and the chat content already went to the model provider. Backups in `~/.ai-agent-audit/purge-backups/` contain the secrets; delete them once you have checked.",
     },
     {
@@ -224,10 +232,11 @@ const en: Guide = {
       do: [
         { p: "In Claude Code, `/sandbox` turns on the sandbox for Bash commands: writes only inside the project, network only to allowed domains. On Linux it needs bubblewrap and socat:" },
         { cmd: "sudo apt-get install bubblewrap socat" },
-        { p: "Important: by default the sandbox does not block reads, so the agent still sees `~/.ssh` and `~/.aws`. Add your key directories to `sandbox.filesystem.denyRead` in settings (see the Claude Code docs: code.claude.com/docs/en`/sandbox`ing)." },
+        { p: "Important: by default the sandbox does not block reads, so the agent still sees `~/.ssh` and `~/.aws`. Add your key directories to `sandbox.filesystem.denyRead` in settings (see the Claude Code docs: `https://code.claude.com/docs/en/sandboxing`)." },
         { p: "MCP servers and hooks run outside the sandbox. That is why pinning MCP versions (step 3) is a separate step." },
         { p: "Before you open an agent in a cloned repository, look at `.claude/settings.json`, `.mcp.json` and `CLAUDE.md`. For truly foreign code use a devcontainer or a separate virtual machine." },
       ],
+      check: "jq .sandbox ~/.claude/settings.json   # \"enabled\": true and your directories in filesystem.denyRead",
       trap: "The sandbox is not full isolation. Broad allowed domains (e.g. github.com) still let data out.",
     },
     {
@@ -236,7 +245,12 @@ const en: Guide = {
       why: "A script that stole something has to send it somewhere. An application firewall asks about every new outbound connection and lets you refuse.",
       do: [
         { p: "Linux: OpenSnitch. macOS: LuLu (free, open source) or Little Snitch. For the first few days you approve the programs you use; after that it rarely asks." },
+        { p: "Linux (Debian, Ubuntu): download `opensnitch_*_amd64.deb` and `python3-opensnitch-ui_*_all.deb` from github.com/evilsocket/opensnitch/releases, then in that directory:" },
+        { cmd: "sudo apt install ./opensnitch_*_amd64.deb ./python3-opensnitch-ui_*_all.deb" },
+        { p: "macOS:" },
+        { cmd: "brew install --cask lulu" },
       ],
+      check: "systemctl is-active opensnitch   # active (on macOS: the LuLu icon in the menu bar)",
       trap: "It will not catch exfiltration through servers you trust, such as github.com with your token. That is how Shai-Hulud worked, which is why step 2 comes first.",
     },
     {
